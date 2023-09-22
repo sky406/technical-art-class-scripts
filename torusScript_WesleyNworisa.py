@@ -83,5 +83,3 @@ def rotateDisk(attributes,primitive):
     return getattributes()
 
 discAttributes = rotateDisk(discAttributes,discName) #once the function is in memory you can just run this part
-
-m.polyPrimitive()
