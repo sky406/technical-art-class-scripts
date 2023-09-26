@@ -21,7 +21,7 @@ def bindObjects():
     global boundObjs
     # first check that the appropriate number of objects are selected
     selected = m.ls(sl=True)
-    if len(selected):
+    if len(selected) != 2:
         confirm("please slect two objects before running","OK","Selection error")
         return boundOBjs
     else:
@@ -71,4 +71,11 @@ def clculateOffset(lead,follow):
     }
     print(offset)
 
+def dropClone(obj:str):
+    m.duplicate(obj,st=True,n=f"{obj}.clone")
+    return
 
+
+# first clear memory 
+boundOBjs = []
+ofset = {}
