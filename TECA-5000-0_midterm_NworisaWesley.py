@@ -1,6 +1,7 @@
-#this part initialized all the functions and binds the two objects
-"""------------------------------start here--------------------------------"""
+# the titles determine which lines of code need to be in their own shelf
+"""------------------------------bind and initialize--------------------------------"""
 import maya.cmds as m
+#this part initialized all the functions and binds the two objects
 def prompttxt(message:str,buttons:str|list,title:str,defaulttxt:str):
     m.promptDialog(
         m = message,
@@ -17,39 +18,14 @@ def confirm(message:str,buttons:str|list,title:str):
         t = title
     )
 
-def bindObjects():
-    global boundObjs
-    # first check that the appropriate number of objects are selected
-    selected = m.ls(sl=True)
-    if len(selected) != 2:
-        confirm("please slect two objects before running","OK","Selection error")
-        return boundOBjs
-    else:
-        # check if a set is already bound
-        if boundObjs != [] and type(boundOBjs) == list:
-            choice=confirm("you are about to remove your original bind are you sure",["yes","no"],"objects already bound")
-            if choice == "yes":
-                global boundOBjs
-                boundOBjs = []
-                return bindObjects()
-            else:
-                # quit
-                return boundOBjs
-        else:
-            leader = confirm("which object do you want to be the leader",selected,"choose you leader")
-            newbind = []
-            newbind.append(selected.pop(selected.index(leader)))
-            newbind.append(selected.pop())
-            print(f"the new order is {newbind}")
-            return newbind
 def getcoords(objectName:str):
     return {
-        "x":m.getAttr("{objectName}.tx"),
-        "y":m.getAttr("{objectName}.ty"),
-        "z":m.getAttr("{objectName}.tz")
+        "x":m.getAttr(f"{objectName}.translateX"),
+        "y":m.getAttr(f"{objectName}.translateY"),
+        "z":m.getAttr(f"{objectName}.translateZ")
     }
 
-def clculateOffset(lead,follow):
+def calculateOffset(lead,follow):
     def isAhead(leadCoord:float,followCoord:float):
         return leadCoord > followCoord
 
@@ -65,17 +41,57 @@ def clculateOffset(lead,follow):
     leadcoords = getcoords(lead)
     folcoords = getcoords(follow)
     offset = {
-        "x":getAxisOffset(lead["x"],follow["y"]),
-        "y":getAxisOffset(lead["y"],follow["y"]),
-        "z":getAxisOffset(lead["z"],follow["z"])
+        "x":getAxisOffset(leadcoords["x"],folcoords["x"]),
+        "y":getAxisOffset(leadcoords["y"],folcoords["y"]),
+        "z":getAxisOffset(leadcoords["z"],folcoords["z"])
     }
-    print(offset)
+    print(f"the offsets are{offset}")
+    return offset
 
 def dropClone(obj:str):
-    m.duplicate(obj,st=True,n=f"{obj}.clone")
+    m.duplicate(obj,st=True,n=f"{obj}.crumb")
     return
 
+def bindObjects():
+    bind = {}
+    selection = m.ls(sl=True)
+    if len(selection) !=2:
+        confirm("please select 2 objects","OK","selection ERROR")
+        return
+    else:
+        leader=confirm("choose your leader",selection,"bind objects")
+        bind["lead"] = selection.pop(selection.index(leader))
+        bind["follow"]=selection.pop(0)
+        print(f"the bound objects are {bind['lead']} and {bind['follow']}")
+    # check if user wants to maintain offset
+    if confirm("do you want to maintain the offset",["yes","no"],"maintain offset?") == "yes":
+        bind["offset"] = calculateOffset(bind["lead"],bind["follow"])
+    else:
+        bind["offset"] = {
+            "x":0,
+            "y":0,
+            "z":0
+        }
+    return bind
 
-# first clear memory 
-boundOBjs = []
-ofset = {}
+def reAlignFollower(bind:dict):
+    followercoords = getcoords(bind["follow"])
+    leadercoords = getcoords(bind["lead"])
+    offset = bind["offset"]
+    alignedx = followercoords["x"] == leadercoords["x"] + offset["x"]
+    alignedy = followercoords["y"] == leadercoords["y"] + offset["y"]
+    alignedz = followercoords["z"] == leadercoords["z"] + offset["z"]
+
+    if alignedx & alignedy & alignedz:
+        confirm("follower already aligned","ok")
+    else:
+        dropClone(bind["follow"])
+        m.move(leadercoords["x"]+offset["x"],leadercoords["y"]+offset["y"],leadercoords["z"]+offset["z"],bind["follow"])
+        confirm("follower alinged","ok","follwer aligner")
+
+boundOBjs = bindObjects()
+"""end here"""
+
+"""realign"""# realigning the follower with the offset
+reAlignFollower(boundOBjs)
+"""end here"""
