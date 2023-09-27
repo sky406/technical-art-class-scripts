@@ -26,17 +26,8 @@ def getcoords(objectName:str):
     }
 
 def calculateOffset(lead,follow):
-    def isAhead(leadCoord:float,followCoord:float):
-        return leadCoord > followCoord
-
     def getAxisOffset(leadCoord:float,followCoord:float):
-        match isAhead(leadCoord,followCoord):
-            case True:
-                # convert offset to negative
-                return -abs(leadCoord-followCoord)
-            case False:
-                # convert offset to positive
-                return abs(leadCoord-followCoord)
+        return followCoord - leadCoord
 
     leadcoords = getcoords(lead)
     folcoords = getcoords(follow)
