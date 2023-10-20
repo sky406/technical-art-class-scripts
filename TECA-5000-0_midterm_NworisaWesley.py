@@ -1,5 +1,5 @@
 # the titles determine which lines of code need to be in their own shelf
-"""------------------------------bind and initialize--------------------------------"""
+"""binding the objects (shelf start)"""
 import maya.cmds as m
 #this part initialized all the functions and binds the two objects
 def prompttxt(message:str,buttons:str|list,title:str,defaulttxt:str):
@@ -10,21 +10,18 @@ def prompttxt(message:str,buttons:str|list,title:str,defaulttxt:str):
         tx= defaulttxt
     )
     return m.promptDialog(q=True,tx=True)
-
 def confirm(message:str,buttons:str|list,title:str):
     return m.confirmDialog(
         m = message,
         b = buttons,
         t = title
     )
-
 def getcoords(objectName:str):
     return {
         "x":m.getAttr(f"{objectName}.translateX"),
         "y":m.getAttr(f"{objectName}.translateY"),
         "z":m.getAttr(f"{objectName}.translateZ")
     }
-
 def calculateOffset(lead,follow):
     def getAxisOffset(leadCoord:float,followCoord:float):
         return followCoord - leadCoord
@@ -38,11 +35,6 @@ def calculateOffset(lead,follow):
     }
     print(f"the offsets are{offset}")
     return offset
-
-def dropClone(obj:str):
-    m.duplicate(obj,st=True,n=f"{obj}.crumb")
-    return
-
 def bindObjects():
     bind = {}
     selection = m.ls(sl=True)
@@ -64,7 +56,13 @@ def bindObjects():
             "z":0
         }
     return bind
+boundOBjs = bindObjects()
+"""shelf end"""
 
+"""realinging the bound objects (shelf start)"""# realigning the follower with the offset
+def dropClone(obj:str):
+    m.duplicate(obj,st=True,n=f"{obj}.crumb")
+    return None
 def reAlignFollower(bind:dict):
     followercoords = getcoords(bind["follow"])
     leadercoords = getcoords(bind["lead"])
@@ -74,15 +72,10 @@ def reAlignFollower(bind:dict):
     alignedz = followercoords["z"] == leadercoords["z"] + offset["z"]
 
     if alignedx & alignedy & alignedz:
-        confirm("follower already aligned","ok")
+        confirm("follower already aligned","ok","follower aligner")
     else:
         dropClone(bind["follow"])
         m.move(leadercoords["x"]+offset["x"],leadercoords["y"]+offset["y"],leadercoords["z"]+offset["z"],bind["follow"])
-        confirm("follower alinged","ok","follwer aligner")
-
-boundOBjs = bindObjects()
-"""end here"""
-
-"""realign"""# realigning the follower with the offset
+        confirm("follower alinged","ok","follower aligner")
 reAlignFollower(boundOBjs)
-"""end here"""
+"""shelf end"""
