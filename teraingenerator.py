@@ -78,10 +78,10 @@ def generate_terrain():
     
     currentTerrain = m.polyPlane(w=planeSizeY,h=planeSizeX,sx=terainRes,sy=terainRes)
 
-def correctAnimtime(): #this just makes sure the animation time doesn't surpass the max animation time
+def correctAnimtime(itteraions:int=1): #this just makes sure the animation time doesn't surpass the max animation time
     global animationSpeed
-    if len(selectedcomponents)*animationSpeed > maxAnimTime:
-        animationSpeed = len(selectedcomponents)/maxAnimTime
+    if len(selectedcomponents)*animationSpeed*itteraions > maxAnimTime:
+        animationSpeed = (len(selectedcomponents)*itteraions)/maxAnimTime
     # note to self may remove this to just have it work in randomize faces 
 
 def randomizefaces():
@@ -113,3 +113,4 @@ def setrange(axis:str):
             global highE_varZ
             # TODO add a slider group for this
             return
+            
