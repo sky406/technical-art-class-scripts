@@ -9,14 +9,17 @@ planeSizeX=10
 planeSizeY=10
 terainRes=10
 
+"""rock variables"""
+rockRes = 3
 """randomizer variables"""
 lowE_varX = 0
 lowE_varY = 0 
 lowE_varZ = 0 
-
 highE_varX = 0 
 highE_varY = 0 
 highE_varZ = 0
+smoothness = 0
+
 
 """selection variables"""
 selectedcomponents = []
@@ -27,8 +30,10 @@ terrainName = "terrain"
 rockName = "OBJ_rock1"
 
 """additional variables"""
-currentTerrain=""
+currentTerrain=None
+animateProcess = False
 # ==============================#
+
 #=====Window=====================
 if m.window("terrainGen",ex=1):
     m.deleteUI("terrainGen")
@@ -38,11 +43,11 @@ tabs = m.tabLayout(innerMarginWidth=5, innerMarginHeight=5)
 m.formLayout( form, edit=True, attachForm=((tabs, 'top', 0), (tabs, 'left', 0), (tabs, 'bottom', 0), (tabs, 'right', 0)) )
 
 terraintab = m.rowColumnLayout(numberOfColumns=2)
-
+# TODO ADD terrain settings here
 m.setParent( '..' )
 
 rocktab = m.rowColumnLayout(numberOfColumns=2)
-
+# TODO ADD rock generator here
 m.setParent( '..' )
 
 m.tabLayout( tabs, edit=True, tabLabel=((terraintab, 'Terrain'), (rocktab, 'Rocks')) )
@@ -60,12 +65,10 @@ def generate_terrain():
     global planeSizeX
     global planeSizeY
     global terainRes
-    if currentTerrain!= "":
+    if currentTerrain != None:
         delprev = confirmprompt("you already have a terrain generated and this action will delete the previous one, do you want to proceed.",["yes","no"],title="delete terrain?")
         if delprev == "yes":
             m.delete(currentTerrain)
             return
     
     currentTerrain = m.polyPlane(w=planeSizeY,h=planeSizeX,sx=terainRes,sy=terainRes)
-        
-    
