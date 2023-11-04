@@ -11,15 +11,18 @@ terainRes=10
 
 """rock variables"""
 rockRes = 3
+
 """randomizer variables"""
 lowE_varX = 0
 lowE_varY = 0 
 lowE_varZ = 0 
+lowE_varSize = 1 
 highE_varX = 0 
 highE_varY = 0 
 highE_varZ = 0
-smoothness = 0
+highE_varSize = 1
 
+smoothness = 0
 
 """selection variables"""
 selectedcomponents = []
@@ -32,6 +35,8 @@ rockName = "OBJ_rock1"
 """additional variables"""
 currentTerrain=None
 animateProcess = False
+animationSpeed = 0.5
+maxAnimTime = 60
 # ==============================#
 
 #=====Window=====================
@@ -72,3 +77,39 @@ def generate_terrain():
             return
     
     currentTerrain = m.polyPlane(w=planeSizeY,h=planeSizeX,sx=terainRes,sy=terainRes)
+
+def correctAnimtime(): #this just makes sure the animation time doesn't surpass the max animation time
+    global animationSpeed
+    if len(selectedcomponents)*animationSpeed > maxAnimTime:
+        animationSpeed = len(selectedcomponents)/maxAnimTime
+    # note to self may remove this to just have it work in randomize faces 
+
+def randomizefaces():
+    correctAnimtime()
+    curFrame = 1
+    for i in selectedcomponents:
+        shiftx = randF(lowE_varX,highE_varX)
+        shifty = randF(lowE_varY,highE_varY)
+        shiftz = randF(lowE_varZ,highE_varZ)
+        m.move(shiftx,shifty,shiftz,r=1)
+        if animateProcess:
+            curFrame+=1
+            time.sleep(animationSpeed)
+
+def setrange(axis:str):
+    match axis:
+        case "X":
+            global lowE_varX
+            global highE_varX
+            # TODO add a slider group for this
+            return
+        case "Y":
+            global lowE_varY
+            global highE_varY
+            # TODO add a slider group for this
+            return
+        case "Z":
+            global lowE_varZ
+            global highE_varZ
+            # TODO add a slider group for this
+            return
