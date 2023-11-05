@@ -96,8 +96,8 @@ def randomizefaces():
             curFrame+=1
             time.sleep(animationSpeed)
 
-def setrange(axis:str):
-    match axis:
+def setrange(rangeparam:str):
+    match rangeparam:
         case "X":
             global lowE_varX
             global highE_varX
@@ -113,4 +113,6 @@ def setrange(axis:str):
             global highE_varZ
             # TODO add a slider group for this
             return
+        case"size":
+            pass
             
