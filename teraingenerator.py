@@ -3,17 +3,20 @@ from random import uniform as randF
 from random import randint as randInt
 from random import choice
 from math import floor
+from statistics import mean
 import time
 
 # default vars ===================#
 """terain variables"""
-planeSizeX=10.0
-planeSizeY=10.0
-terainRes=10
+planeSizeX=100.0
+planeSizeY=100.0
+terainRes=30
 editPerc=100
 
 """rock variables"""
 rockRes = 3
+rockGroups = []
+defaultRockGroupName = "rocks"
 
 """randomizer variables"""
 lowE_varX = 0
@@ -40,7 +43,6 @@ currentTerrain=None
 animateProcess = False
 animationSpeed = 0.5
 maxAnimTime = 10
-# ==============================#
 
 #=====Window=====================
 if m.window("terrainGen",ex=1):
@@ -58,22 +60,33 @@ terrSize = m.floatFieldGrp(l="terrain size",v1=planeSizeX,v2=planeSizeY,nf=2)
 m.button(l="generate terrain",c="generate_terrain()")
 m.separator()
 m.text(l="randomize terrain")
-randperc=m.intSliderGrp(l="how much of the terrain should this effect",min=1,max=100)
-terRangeX_upper=m.floatSliderGrp(l="upperX",v=1,min=-10,max=10)
-terRangeX_lower=m.floatSliderGrp(l="lowerX",v=0,min=-10,max=10)
+planesmoothness=m.floatSliderGrp(l="smoothness",min=0.0,max=10)
+randperc=m.intSliderGrp(l="% affected",min=1,max=100,f=1)
+terRangeY_upper=m.floatSliderGrp(l="upperY",v=10,min=-10,max=10,f=1)
+terRangeY_lower=m.floatSliderGrp(l="lowerY",v=-10,min=-10,max=10,f=1)
 
-terRangeY_upper=m.floatSliderGrp(l="upperY",v=1,min=-10,max=10)
-terRangeY_lower=m.floatSliderGrp(l="lowerY",v=0,min=-10,max=10)
-
-terRangeZ_upper=m.floatSliderGrp(l="upperZ",v=1,min=-10,max=10)
-terRangeZ_lower=m.floatSliderGrp(l="lowerZ",v=0,min=-10,max=10)
-
-m.button(l="make random",c="randomizeTerrain()")
+m.button(l="randomize",c="randomizeTerrain()")
 
 m.setParent( '..' )
 
-rocktab = m.rowColumnLayout(numberOfColumns=2)
+rocktab = m.rowColumnLayout()
 # TODO ADD rock generator here
+UIrockGrpName = m.textFieldGrp(l="rock group name",tx=defaultRockGroupName)
+UIrocknum = m.intSliderGrp(f=1,l="number of rocks gnerated",v=10,min=1,max=100)
+m.separator()
+UIrocksmoothness = m.floatSliderGrp(l="smoothness",min=0.0,max=10)
+UIrocktype = m.checkBoxGrp(ncb=3,l="select rock types",l1="round",l2="sharp",l3="complex",v1=1)
+m.separator() 
+UIrockscale = m.floatSliderGrp(f=1,l="rock scale",v=1,min=1,max=10)
+UIrockscaleisRange = m.checkBoxGrp(l="is range",ncb=1,v1=1)
+
+UIXupper = m.floatFieldGrp(f=1,min=0,max=10,l="upper x value")
+UIXlower = m.floatFieldGrp(f=1,min=-10,max=0,l="lower x value")
+
+UIYupper = m.floatFieldGrp(f=1,min=0,max=10,l="upper y value")
+UIYlower = m.floatFieldGrp(f=1,min=-10,max=0,l="lower y value")
+
+
 m.setParent( '..' )
 
 m.tabLayout( tabs, edit=True, tabLabel=((terraintab, 'Terrain'), (rocktab, 'Rocks')) )
@@ -114,7 +127,7 @@ def generate_terrain():
             m.delete(currentTerrain)
             currentTerrain = None
         else:
-            return
+            return 
     
     currentTerrain = m.polyPlane(w=planeSizeY,h=planeSizeX,sx=xres,sy=yres,n=terrainName)
 
@@ -130,53 +143,39 @@ def randomizefaces(selected:list):
     curFrame = 1
     for i in selected:
         # print(i)
-        # m.select(i)
+        m.select(i)
         shiftx = randF(lowE_varX,highE_varX)
         shifty = randF(lowE_varY,highE_varY)
         shiftz = randF(lowE_varZ,highE_varZ)
-        m.move(shiftx,shifty,shiftz,i,r=1)
+        m.move(shiftx,shifty,shiftz,r=1)
         if animateProcess:
             m.currentTime(curFrame)
             curFrame+=1
             time.sleep(animationSpeed)
 
-def setrange(rangeparam:str):
-    match rangeparam:
-        case "X":
-            global lowE_varX
-            global highE_varX
-            # TODO add a slider group for this
-            return
-        case "Y":
-            global lowE_varY
-            global highE_varY
-            # TODO add a slider group for this
-            return
-        case "Z":
-            global lowE_varZ
-            global highE_varZ
-            # TODO add a slider group for this
-            return
-        case"size":
-            pass
-def randomizeTerrain():
-    global lowE_varX,lowE_varY,lowE_varZ,highE_varX,highE_varY,highE_varZ,editPerc
 
+def randomizeTerrain():
+    global lowE_varX,lowE_varY,lowE_varZ,highE_varX,highE_varY,highE_varZ,editPerc,smoothness,terainRes
+    
+    
     m.select(f"{currentTerrain[0]}.f[*]")
     faces = m.ls(sl=1,fl=1)
     editPerc = m.intSliderGrp(randperc,q=1,v=1)
     selpoints=[]
-    for i in range(0,floor(len(faces)*editPerc/100)):
+    for i in range(0,floor(len(faces)*(editPerc/100))):
         selpoints.append(faces.pop(randInt(0,len(faces)-1)))
     # TODO add softselect to make this more functional
     
-    lowE_varX = m.floatSliderGrp(terRangeX_lower,q=1,v=1)
+    lowE_varX = 0
     lowE_varY = m.floatSliderGrp(terRangeY_lower,q=1,v=1)
-    lowE_varZ = m.floatSliderGrp(terRangeZ_lower,q=1,v=1)
+    lowE_varZ = 0
 
-    highE_varX = m.floatSliderGrp(terRangeX_upper,q=1,v=1)
+    highE_varX = 0
     highE_varY = m.floatSliderGrp(terRangeY_upper,q=1,v=1)
-    highE_varZ = m.floatSliderGrp(terRangeZ_upper,q=1,v=1)
-    # TODO clean these functions a bit 
-
+    highE_varZ = 0
+    smoothness = m.floatSliderGrp(planesmoothness,q=1,v=1) 
+    falloff = mean([m.polyPlane( currentTerrain,q=1,h=1)/terainRes, m.polyPlane(currentTerrain,q=1,w=1)/terainRes]) * smoothness
+    print(f"the falloff is {falloff}")
+    m.softSelect(sse=1,ssd=falloff)
     randomizefaces(selpoints)
+# TODO add a toggle for soft select
