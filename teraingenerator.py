@@ -70,22 +70,24 @@ m.button(l="randomize",c="randomizeTerrain()")
 m.setParent( '..' )
 
 rocktab = m.rowColumnLayout()
-# TODO ADD rock generator here
-UIrockGrpName = m.textFieldGrp(l="rock group name",tx=defaultRockGroupName)
+UIrockName = m.textFieldGrp(l="general rock name",tx=defaultRockGroupName)
 UIrocknum = m.intSliderGrp(f=1,l="number of rocks gnerated",v=10,min=1,max=100)
 m.separator()
-UIrocksmoothness = m.floatSliderGrp(l="smoothness",min=0.0,max=10)
-UIrocktype = m.checkBoxGrp(ncb=3,l="select rock types",l1="round",l2="sharp",l3="complex",v1=1)
+UIrockres = m.floatSliderGrp(f=1,min=3,max=10,l="rock resolution" v=3)
+UIrocktypes = m.checkBoxGrp(ncb=3,l="what type of rocks are you using",l1="boulders",l2="river rocks",l3="bricks",v1=1)
 m.separator() 
 UIrockscale = m.floatSliderGrp(f=1,l="rock scale",v=1,min=1,max=10)
 UIrockscaleisRange = m.checkBoxGrp(l="is range",ncb=1,v1=1)
 
-UIXupper = m.floatFieldGrp(f=1,min=0,max=10,l="upper x value")
-UIXlower = m.floatFieldGrp(f=1,min=-10,max=0,l="lower x value")
+UIXupper = m.floatSliderGrp(f=1,min=-10,max=10,l="upper x value")
+UIXlower = m.floatSliderGrp(f=1,min=-10,max=10,l="lower x value")
 
-UIYupper = m.floatFieldGrp(f=1,min=0,max=10,l="upper y value")
-UIYlower = m.floatFieldGrp(f=1,min=-10,max=0,l="lower y value")
+UIYupper = m.floatSliderGrp(f=1,min=-10,max=10,l="upper y value")
+UIYlower = m.floatSliderGrp(f=1,min=-10,max=10,l="lower y value")
 
+UIZupper = m.floatSliderGrp(f=1,min=-10,max=10,l="upper z value")
+UIZlower = m.floatSliderGrp(f=1,min=-10,max=10,l="lower Z value")
+m.button(l="generate rocks",c="generaterocks()")
 
 m.setParent( '..' )
 
@@ -164,8 +166,6 @@ def randomizeTerrain():
     selpoints=[]
     for i in range(0,floor(len(faces)*(editPerc/100))):
         selpoints.append(faces.pop(randInt(0,len(faces)-1)))
-    # TODO add softselect to make this more functional
-    
     lowE_varX = 0
     lowE_varY = m.floatSliderGrp(terRangeY_lower,q=1,v=1)
     lowE_varZ = 0
@@ -178,4 +178,6 @@ def randomizeTerrain():
     print(f"the falloff is {falloff}")
     m.softSelect(sse=1,ssd=falloff)
     randomizefaces(selpoints)
-# TODO add a toggle for soft select
+
+def generaterrocks():
+    
