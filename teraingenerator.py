@@ -17,12 +17,13 @@ editPerc=100
 rockRes = 3
 rockGroups = []
 defaultRockGroupName = "rocks"
+rockNumber = 10
 
 """randomizer variables"""
 lowE_varX = 0
 lowE_varY = 0 
 lowE_varZ = 0 
-lowE_varSize = 1 
+lowE_varSize = 0 
 highE_varX = 0 
 highE_varY = 0 
 highE_varZ = 0
@@ -71,22 +72,22 @@ m.setParent( '..' )
 
 rocktab = m.rowColumnLayout()
 UIrockName = m.textFieldGrp(l="general rock name",tx=defaultRockGroupName)
-UIrocknum = m.intSliderGrp(f=1,l="number of rocks gnerated",v=10,min=1,max=100)
+UIrocknum = m.intSliderGrp(f=1,l="number of rocks gnerated",v=rockNumber,min=1,max=100)
 m.separator()
-UIrockres = m.floatSliderGrp(f=1,min=3,max=10,l="rock resolution" v=3)
+UIrockres = m.floatSliderGrp(f=1,min=3,max=10,l="rock resolution",v=3)
 UIrocktypes = m.checkBoxGrp(ncb=3,l="what type of rocks are you using",l1="boulders",l2="river rocks",l3="bricks",v1=1)
 m.separator() 
 UIrockscale = m.floatSliderGrp(f=1,l="rock scale",v=1,min=1,max=10)
 UIrockscaleisRange = m.checkBoxGrp(l="is range",ncb=1,v1=1)
 
-UIXupper = m.floatSliderGrp(f=1,min=-10,max=10,l="upper x value")
-UIXlower = m.floatSliderGrp(f=1,min=-10,max=10,l="lower x value")
+UIXupper = m.floatSliderGrp(f=1,min=-1,max=1,l="upper x value")
+UIXlower = m.floatSliderGrp(f=1,min=-1,max=1,l="lower x value")
 
-UIYupper = m.floatSliderGrp(f=1,min=-10,max=10,l="upper y value")
-UIYlower = m.floatSliderGrp(f=1,min=-10,max=10,l="lower y value")
+UIYupper = m.floatSliderGrp(f=1,min=-1,max=1,l="upper y value")
+UIYlower = m.floatSliderGrp(f=1,min=-1,max=1,l="lower y value")
 
-UIZupper = m.floatSliderGrp(f=1,min=-10,max=10,l="upper z value")
-UIZlower = m.floatSliderGrp(f=1,min=-10,max=10,l="lower Z value")
+UIZupper = m.floatSliderGrp(f=1,min=-1,max=1,l="upper z value")
+UIZlower = m.floatSliderGrp(f=1,min=-1,max=1,l="lower Z value")
 m.button(l="generate rocks",c="generaterocks()")
 
 m.setParent( '..' )
@@ -140,11 +141,9 @@ def correctAnimtime(itteraions:int=1): #this just makes sure the animation time 
     # note to self may remove this to just have it work in randomize faces 
 
 def randomizefaces(selected:list):
-    # TODO make this use a choice of selections
     correctAnimtime()
     curFrame = 1
     for i in selected:
-        # print(i)
         m.select(i)
         shiftx = randF(lowE_varX,highE_varX)
         shifty = randF(lowE_varY,highE_varY)
@@ -179,5 +178,50 @@ def randomizeTerrain():
     m.softSelect(sse=1,ssd=falloff)
     randomizefaces(selpoints)
 
-def generaterrocks():
-    
+def generaterocks():
+    global lowE_varX,lowE_varY,lowE_varZ,highE_varX,highE_varY,highE_varZ,rockName,rockRes,rockNumber
+    lowE_varX = m.floatSliderGrp(UIXlower,q=1,v=1)
+    lowE_varY = m.floatSliderGrp(UIYlower,q=1,v=1)
+    lowE_varZ = m.floatSliderGrp(UIZlower,q=1,v=1)
+    highE_varX = m.floatSliderGrp(UIXupper,q=1,v=1)
+    highE_varY = m.floatSliderGrp(UIYupper,q=1,v=1)
+    highE_varZ = m.floatSliderGrp(UIZupper,q=1,v=1)
+    rockNumber = m.intSliderGrp(UIrocknum,q=1,v=1)
+    rockRes = m.floatSliderGrp(UIrockres,q=1,v=1)
+    rockName = m.textFieldGrp(UIrockName,q=1,tx=1)
+    typesgenerated = []
+    if m.checkBoxGrp(UIrocktypes,q=1,v1=1):
+        typesgenerated.append("boulder")
+    if m.checkBoxGrp(UIrocktypes,q=1,v2=1):
+        typesgenerated.append("riverrock")
+    if m.checkBoxGrp(UIrocktypes,q=1,v3=1):
+        typesgenerated.append("brick")
+    for i in range(0,rockNumber):
+        rocktype = choice(typesgenerated)
+        rock = generaterock(rocktype)
+        m.select(f"{rock[0]}.f[*]")
+        faces = m.ls(sl=1,fl=1)
+        match rocktype:
+            case "boulder":
+                m.softSelect(sse=0)
+            case "brick":
+                falloff = mean([m.polyCube(rock,q=1,h=1)/rockRes,m.polyCube(rock,q=1,w=1)/rockRes,m.polyCube(rock,q=1,d=1)/rockRes])*0.5
+                m.softSelect(sse=1,ssd=falloff)
+            case "riverrock":
+                falloff = m.polySphere(rock,q=1,r=1)/rockRes * 5
+        randomizefaces(faces)
+
+def generaterock(rocktype:str):
+    global rockRes,rockName
+    match rocktype:
+        case "boulder":
+            rock = m.polyPlatonicSolid(n=rockName,r=10,st=randInt(0,3))
+            # m.polySubdivideFacet(rock,dv=rockRes)
+            return rock
+        case "brick":
+            rock = m.polyCube(n=rockName,w=20,h=10,d=10,sx=rockRes,sy=rockRes)
+            return rock
+        case "riverrock":
+            rock = m.polySphere(n=rockName,r=10,sx=rockRes,sy=rockRes)
+            return rock
+# TODO fix the rock gen code, it needs a bit of optimization
