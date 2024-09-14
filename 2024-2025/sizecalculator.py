@@ -5,6 +5,7 @@ def confirmprompt(message:str,buttons:str|list,title:str = "confirm"):
         b = buttons,
         t = title
     )
+"""measure start"""
 
 def measure():
     selections = m.ls(sl=1)
@@ -45,3 +46,5 @@ def measure():
         \n depth(z):{round(zsize,3)}""")
 
 measure()
+
+"""measure end"""
