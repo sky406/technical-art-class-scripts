@@ -84,4 +84,4 @@ def placeruler():
         
 placeruler()
 
-"""ruleer end """
+"""ruler end """
