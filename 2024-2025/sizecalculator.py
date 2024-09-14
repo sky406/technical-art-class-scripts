@@ -12,7 +12,7 @@ def measure():
     objects = {}
     for i in selections:
         objects[i] = m.ls(f"{i}.vtx[*]",fl=1)
-    print(objects)
+    # print(objects)
 
     if selections == []:
         confirmprompt("select something","ok","nothing selected")
@@ -25,7 +25,7 @@ def measure():
 
         for vertex in vertices:
             position = m.pointPosition(vertex,l=1)
-            print(position)
+            # print(position)
             count = 0
             for coordinate in position:
                 if position[count]>xyzmax[count]:
@@ -44,6 +44,7 @@ def measure():
         \n height:{round(ysize,3)} 
         \n width(x):{round(xsize,3)} 
         \n depth(z):{round(zsize,3)}""")
+    m.select(cl=1)
 
 measure()
 
@@ -56,7 +57,7 @@ def placeruler():
     objects = {}
     for i in selections:
         objects[i] = m.ls(f"{i}.vtx[*]",fl=1)
-    print(objects)
+    # print(objects)
 
     if selections == []:
         confirmprompt("select something","ok","nothing selected")
@@ -82,6 +83,7 @@ def placeruler():
         width = m.distanceDimension(sp=[fc[0],fc[1],fc[2]],ep=[fc[0],fc[1],reach[2]])
         depth = m.distanceDimension(sp=[fc[0],fc[1],fc[2]],ep=[reach[0],fc[1],fc[2]])
         
+    m.select(cl=1)
 placeruler()
 
 """ruler end """
