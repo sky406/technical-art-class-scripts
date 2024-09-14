@@ -62,37 +62,22 @@ def placeruler():
 
     for i in objects.keys():
         vertices = objects[i]
-        # xyzmax = [0,0,0]
-        # xyzmin = [0,0,0]
 
-        # for vertex in vertices:
-        #     position = m.pointPosition(vertex,w=1)
-        #     print(position)
-        #     count = 0
-        #     for coordinate in position:
-        #         if position[count]>xyzmax[count]:
-        #             xyzmax[count] = position[count]
-        #         if position[count]<xyzmin[count]:
-        #             xyzmin[count] = position[count]
-        #         count+=1
-        def lowervector(vector1,vector2):
-            # for these both vectors are lists with three values
-            count = 0
-            oneislower = []
-            for i in vector1:
-                if vector1[count]>vector2[count]:
-                    oneislower
-                count+=1
-            return vector2
+        xcoords = []
+        ycoords = []
+        zcoords = []
 
-
-        furthestcorner = None
-        for vertex in vertics:
+        for vertex in vertices:
             position = m.pointPosition(vertex,w=1)
-            if furthestcorner == None:
-                furthestcorner = position
-            else:
-                furthestcorner = lowervector(furthestcorner)
-            
-        print(f"xyz max = {xyzmax}  and xyz min = {xyzmin}")
-# TODO make sense of this at some point
+            xcoords.append(position[0])
+            ycoords.append(position[1])
+            zcoords.append(position[2])
+
+        fc = [min(xcoords),min(ycoords),min(zcoords)]
+        reach = [max(xcoords),max(ycoords),max(zcoords)]
+
+        height = m.distanceDimension(sp=[fc[0],fc[1],fc[2]],ep=[fc[0],reach[1],fc[2]])
+        width = m.distanceDimension(sp=[fc[0],fc[1],fc[2]],ep=[fc[0],fc[1],reach[2]])
+        depth = m.distanceDimension(sp=[fc[0],fc[1],fc[2]],ep=[reach[0],fc[1],fc[2]])
+        
+placeruler()
