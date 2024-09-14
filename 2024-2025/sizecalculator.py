@@ -49,6 +49,8 @@ measure()
 
 """measure end"""
 
+"""ruler start"""
+
 def placeruler():
     selections = m.ls(sl=1)
     objects = {}
@@ -81,3 +83,5 @@ def placeruler():
         depth = m.distanceDimension(sp=[fc[0],fc[1],fc[2]],ep=[reach[0],fc[1],fc[2]])
         
 placeruler()
+
+"""ruleer end """
