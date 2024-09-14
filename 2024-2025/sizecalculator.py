@@ -48,3 +48,51 @@ def measure():
 measure()
 
 """measure end"""
+
+def placeruler():
+    selections = m.ls(sl=1)
+    objects = {}
+    for i in selections:
+        objects[i] = m.ls(f"{i}.vtx[*]",fl=1)
+    print(objects)
+
+    if selections == []:
+        confirmprompt("select something","ok","nothing selected")
+
+
+    for i in objects.keys():
+        vertices = objects[i]
+        # xyzmax = [0,0,0]
+        # xyzmin = [0,0,0]
+
+        # for vertex in vertices:
+        #     position = m.pointPosition(vertex,w=1)
+        #     print(position)
+        #     count = 0
+        #     for coordinate in position:
+        #         if position[count]>xyzmax[count]:
+        #             xyzmax[count] = position[count]
+        #         if position[count]<xyzmin[count]:
+        #             xyzmin[count] = position[count]
+        #         count+=1
+        def lowervector(vector1,vector2):
+            # for these both vectors are lists with three values
+            count = 0
+            oneislower = []
+            for i in vector1:
+                if vector1[count]>vector2[count]:
+                    oneislower
+                count+=1
+            return vector2
+
+
+        furthestcorner = None
+        for vertex in vertics:
+            position = m.pointPosition(vertex,w=1)
+            if furthestcorner == None:
+                furthestcorner = position
+            else:
+                furthestcorner = lowervector(furthestcorner)
+            
+        print(f"xyz max = {xyzmax}  and xyz min = {xyzmin}")
+# TODO make sense of this at some point
