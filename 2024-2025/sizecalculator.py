@@ -41,7 +41,7 @@ def measure():
 
         print (f"""{i}'s dimensions are 
         \n height:{round(ysize,3)} 
-        \n width:{round(xsize,3)} 
-        \n depth:{round(zsize,3)}""")
+        \n width(x):{round(xsize,3)} 
+        \n depth(z):{round(zsize,3)}""")
 
 measure()
