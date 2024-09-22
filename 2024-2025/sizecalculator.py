@@ -53,8 +53,9 @@ def measure():
 
         print(f"""{i} measurements: \n width {width} \n height {height} \n depth {depth}""")
 
-
 measure()
+       
+"""measure end"""
 
 def truemeasure():
     # this is just measuring without rotation or scale
@@ -70,12 +71,21 @@ def truemeasure():
         m.delete()
 
 truemeasure()
-        
 
+def measureNorotate():
+    # this is just measuring without rotation or scale
+    selections = m.ls(sl=1)
+    if selections == []:
+        confirmprompt("select something","ok","nothing selected")
 
+    for i in selections:
+        # m.duplicate(i,n=f"noScale_noRotate_{i}")
+        m.setAttr(f"noScale_noRotate_{i}.rotate",0,0,0)
+        m.setAttr(f"noScale_noRotate_{i}.scale",1,1,1)
+        measure()
+        m.delete()
 
-"""measure end"""
-
+ 
 """ruler start"""
 
 def placeruler():
