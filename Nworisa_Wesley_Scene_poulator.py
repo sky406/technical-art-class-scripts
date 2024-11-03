@@ -2,8 +2,6 @@ import maya.cmds as m
 from random import uniform, randrange, choice
 import math as mat
 
-# def pivotTobottom(shape,height):
-#     m.move(0,-0.5*height,0,f"{shape}.scalePivot",f"{shape}.rotatePivot")
 
 def pivotMove(shape,position,height,width,depth):
     # m.select(f"{shape[0]}.scalePivot",f"{shape[0]}.rotatePivot")
@@ -45,7 +43,6 @@ def coneToside(cone,height,radius):
     resetRotation(cone)
     # baseToCenter(cone,height)
 
-
 def resetRotation(shape):
     m.makeIdentity(shape[0],r=1,a=1)
 
@@ -60,6 +57,18 @@ def rot90(shape,axis:str,height,width,depth):
             m.rotate(-90,0,0,shape[0])
             
     resetRotation(shape)
+
+def createArray(arrayrange:int):
+    array = []
+    for x in range(-arrayrange,arrayrange,1):
+        for y in range(-arrayrange,arrayrange,1):
+            array.append([x,y])
+    print(array)
+    return array
+
+def createzollisionBlacklist(shape):
+    pass
+
 
 def createShapes(type:str,number:int,spreadRange,scaleRange,height,width,depth):
     for i in range(number):
@@ -90,9 +99,11 @@ def createShapes(type:str,number:int,spreadRange,scaleRange,height,width,depth):
         m.scale(scale,scale,scale,shape[0])
         
         # scatter the shapes
+        collisionBlacklist = []
+
         def randomposition():
             return uniform(-spreadRange,spreadRange)
         m.move(randomposition(),0,randomposition(),shape[0],r=1)
         
 #test call please ignore           
-createShapes("cylinder",30,900,12,9,6,2)
+# createShapes("cylinder",30,900,12,9,6,2)
