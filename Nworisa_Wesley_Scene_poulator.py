@@ -66,8 +66,22 @@ def createArray(arrayrange:int):
     print(array)
     return array
 
-def createzollisionBlacklist(shape):
-    pass
+def addToCollisionBlacklist(shape,blacklist:list):
+    bbox = m.exactWorldBoundingBox(shape[0])
+    xmin = bbox[0]
+    zmin = bbox[2]
+    xmax = bbox[3]
+    zmax = bbox[5]
+    print(f"{int(xmax)}<>{int(xmin)} , {int(zmax)}<>{int(zmin)}")
+    for x in range(int(xmin),int(xmax)):
+        for y in range(int(zmin),int(zmax)):
+            if [x,y] not in blacklist:
+                blacklist.append([x,y])
+    return blacklist
+
+def isColliding()
+
+
 
 
 def createShapes(type:str,number:int,spreadRange,scaleRange,height,width,depth):
@@ -104,6 +118,7 @@ def createShapes(type:str,number:int,spreadRange,scaleRange,height,width,depth):
         def randomposition():
             return uniform(-spreadRange,spreadRange)
         m.move(randomposition(),0,randomposition(),shape[0],r=1)
+        collisionBlacklist = addToCollisionBlacklist(shape,collisionBlacklist)
         
 #test call please ignore           
-# createShapes("cylinder",30,900,12,9,6,2)
+createShapes("cylinder",30,900,12,9,6,2)
