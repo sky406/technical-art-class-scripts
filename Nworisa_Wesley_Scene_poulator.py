@@ -66,24 +66,59 @@ def createArray(arrayrange:int):
     print(array)
     return array
 
-def addToCollisionBlacklist(shape,blacklist:list):
+def CreateBlacklistdict(shape):
     bbox = m.exactWorldBoundingBox(shape[0])
     xmin = bbox[0]
     zmin = bbox[2]
     xmax = bbox[3]
     zmax = bbox[5]
-    print(f"{int(xmax)}<>{int(xmin)} , {int(zmax)}<>{int(zmin)}")
-    for x in range(int(xmin),int(xmax)):
-        for y in range(int(zmin),int(zmax)):
-            if [x,y] not in blacklist:
-                blacklist.append([x,y])
-    return blacklist
+    print(f"{xmax}<>{xmin} , {zmax}<>{zmin}")
+    dict = {
+        "xmin":xmin,
+        "xmax":xmax,
+        "zmin":zmin,
+        "zmax":zmax,
+    }
+    return dict
 
-def isColliding():
-    pass
+def moveFromCollision(shape,Bbox):
+    def isbetween(target,lowerbound,upperbound):
+        return target>=lowerbound and target<=upperbound
+    shapeBbox = CreateBlacklistdict(shape)
+    # variables for algnment with coordinates
+    xPos = isbetween(shapeBbox["xmax"],Bbox["xmin"],Bbox["xmin"])
+    xNeg = isbetween(shapeBbox["xmin"],Bbox["xmin"],Bbox["xmax"])
+    zPos = isbetween(shapeBbox["zmax"],Bbox["zmin"],Bbox["zmax"])
+    zNeg = isbetween(shapeBbox["zmin"],Bbox["zmin"],Bbox["zmax"])
+    if (xPos or xNeg) and (zPos or zNeg) :
+        moveX = 0
+        moveZ = 0
+        # i know it is confusing but i'e already commited to the poitive negative x, it caould be changed later if i have time 
+        posXdistance = shapeBbox["xmax"]-Bbox["xmin"]
+        negXdistance = Bbox["xmax"]-shapeBbox["xmin"]
 
-
-
+        posZdistance = shapeBbox["zmax"]-Bbox["zmin"]
+        negZdistance = Bbox["zmax"]-Bbox["zmin"]
+        if xPos and xNeg:    
+            if posXdistance < negXdistance:
+                moveX = -posXdistance
+            else:
+                moveX = negXdistance
+        elif xPos:
+            moveX = -posXdistance
+        else:
+            moveX = negXdistance
+        
+        if zPos and zNeg:    
+            if posXdistance < negZdistance:
+                moveZ = -posZdistance
+            else:
+                moveZ = negZdistance
+        elif xPos:
+            moveZ = -posZdistance
+        else:
+            moveZ = negZdistance
+        
 
 def createShapes(type:str,number:int,spreadRange,scaleRange,height,width,depth):
     for i in range(number):
@@ -119,7 +154,7 @@ def createShapes(type:str,number:int,spreadRange,scaleRange,height,width,depth):
         def randomposition():
             return uniform(-spreadRange,spreadRange)
         m.move(randomposition(),0,randomposition(),shape[0],r=1)
-        collisionBlacklist = addToCollisionBlacklist(shape,collisionBlacklist)
+        # collisionBlacklist = 
         
 #test call please ignore           
 createShapes("cylinder",30,900,12,9,6,2)
