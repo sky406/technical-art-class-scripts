@@ -1,4 +1,5 @@
 import maya.cmds as m
+import math
 def confirmprompt(message:str,buttons:str|list,title:str = "confirm"):
     return m.confirmDialog(
         m = message,
@@ -6,6 +7,23 @@ def confirmprompt(message:str,buttons:str|list,title:str = "confirm"):
         t = title
     )
 """measure start"""
+def distanceTo(point1:list,point2:list):
+    #this is intende to work with the pointposition command and only really works with lists with a size of 3
+    point1X = point1[0]
+    point1Y = point1[1]
+    point1Z = point1[2]
+
+    point2X = point2[0]
+    point2Y = point2[1]
+    point2Z = point2[2]
+    
+    distX = (point2X-point1X)
+    distY = (point2Y-point1Y)
+    distZ = (point2Z-point1Z)
+
+    distance = math.sqrt((distX**2)+(distY**2)+(distZ**2))
+    return distance
+
 
 def measure():
     selections = m.ls(sl=1)
@@ -17,39 +35,57 @@ def measure():
     if selections == []:
         confirmprompt("select something","ok","nothing selected")
 
-
     for i in objects.keys():
         vertices = objects[i]
-        xyzmax = [0,0,0]
-        xyzmin = [0,0,0]
+        xcoords = []
+        ycoords = []
+        zcoords = []
 
         for vertex in vertices:
-            position = m.pointPosition(vertex,l=1)
-            # print(position)
-            count = 0
-            for coordinate in position:
-                if position[count]>xyzmax[count]:
-                    xyzmax[count] = position[count]
-                if position[count]<xyzmin[count]:
-                    xyzmin[count] = position[count]
-                count+=1
-            
-        print(f"xyz max = {xyzmax}  and xyz min = {xyzmin}")
+            position = m.pointPosition(vertex,w=1)
+            xcoords.append(position[0])
+            ycoords.append(position[1])
+            zcoords.append(position[2])
+        # width is x depthis z
+        width = max(xcoords)-min(xcoords)
+        height = max(ycoords)-min(ycoords)
+        depth  = max(zcoords)-min(zcoords)
 
-        xsize = xyzmax[0]-xyzmin[0] * m.getAttr(f"""{i}.scaleX""")
-        ysize = xyzmax[1]-xyzmin[1] * m.getAttr(f"""{i}.scaleY""")
-        zsize = xyzmax[2]-xyzmin[2] * m.getAttr(f"""{i}.scaleZ""")
-
-        print (f"""{i}'s dimensions are 
-        \n height:{round(ysize,3)} 
-        \n width(x):{round(xsize,3)} 
-        \n depth(z):{round(zsize,3)}""")
-    m.select(cl=1)
+        print(f"""{i} measurements: \n width {width} \n height {height} \n depth {depth}""")
 
 measure()
-
+       
 """measure end"""
 
+def truemeasure():
+    # this is just measuring without rotation or scale
+    selections = m.ls(sl=1)
+    if selections == []:
+        confirmprompt("select something","ok","nothing selected")
+
+    for i in selections:
+        m.duplicate(i,n=f"noScale_noRotate_{i}")
+        m.setAttr(f"noScale_noRotate_{i}.rotate",0,0,0)
+        m.setAttr(f"noScale_noRotate_{i}.scale",1,1,1)
+        measure()
+        m.delete()
+
+truemeasure()
+
+def measureNorotate():
+    # this is just measuring without rotation or scale
+    selections = m.ls(sl=1)
+    if selections == []:
+        confirmprompt("select something","ok","nothing selected")
+
+    for i in selections:
+        # m.duplicate(i,n=f"noScale_noRotate_{i}")
+        m.setAttr(f"noScale_noRotate_{i}.rotate",0,0,0)
+        m.setAttr(f"noScale_noRotate_{i}.scale",1,1,1)
+        measure()
+        m.delete()
+
+ 
 """ruler start"""
 
 def placeruler():
