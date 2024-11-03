@@ -79,7 +79,8 @@ def addToCollisionBlacklist(shape,blacklist:list):
                 blacklist.append([x,y])
     return blacklist
 
-def isColliding()
+def isColliding():
+    pass
 
 
 
