@@ -1,0 +1,2 @@
+so this was essentially a tool to deal with a frustration i had with how maya didn't really help with easily figuring out the measurement of an object. 
+i was going to make this a bigger tool for more personal reasons but that might be far too complicated for what i need
